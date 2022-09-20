@@ -70,6 +70,7 @@ internal class Program
 		Console.ResetColor();
 		Console.WriteLine("---------------");
 		Console.WriteLine();
+		Thread.Sleep(1000);
 	}
 
 	private static void ProcessUserInput(string word)
