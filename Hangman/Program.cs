@@ -8,7 +8,6 @@ internal class Program
 {
 	static Random rnd = new Random();
 
-	static string[]? dict;
 	static string[]? gallows;
 
 	static int lives;
@@ -27,22 +26,40 @@ internal class Program
 			while (lives > 0)
 			{
 				GameLoop(word);
+
+				if(guess.ToString().ToLower() == word.ToLower())
+				{
+					GameWin();
+					break;
+				}
 			}
+
+			if(lives <= 0)
+				EndScreen();
 
 			GameEnd();
 		}
 	}
 
+	private static void GameWin()
+	{
+		Console.WriteLine("-------------------------");
+		Console.ForegroundColor = ConsoleColor.Green;
+		Console.WriteLine("Congratulations! You win!");
+		Console.ResetColor();
+		Console.WriteLine("-------------------------");
+		Console.WriteLine();
+		Thread.Sleep(1000);
+	}
+
 	private static void Init()
 	{
-		ReadFileToStringArr("dict.txt", '\n', out dict);
-		ReadFileToStringArr("gallow.txt", ',', out gallows);
+		ReadFileToStringArr("gallow.txt", ',', ref gallows);
 		gallows = gallows.Reverse().ToArray();
 	}
 
 	private static void GameEnd()
 	{
-		EndScreen();
 		Console.Write("Press any key to start again.....");
 		Console.ReadKey();
 		Console.Clear();
@@ -57,6 +74,8 @@ internal class Program
 		Console.Write("Enter your guess: ");
 		ProcessUserInput(word);
 		Console.WriteLine($"Remaining lives: {lives}\n");
+		Console.WriteLine();
+		Console.WriteLine($"Your guesses: {guesses}");
 
 		Thread.Sleep(1000);
 		Console.Clear();
@@ -93,8 +112,9 @@ internal class Program
 
 	private static string Reset()
 	{
-		string word = dict[rnd.Next(0, dict.Length)];
-		guess = new StringBuilder(new String('_', word.Length));
+		string word = File.ReadLines("dict.txt").Skip(rnd.Next(0 ,189590)).Take(1).First();
+		guess = new StringBuilder(new String('_', word.Length - 1));
+		guess.Append('\r');
 		lives = 7;
 		return word;
 	}
@@ -108,7 +128,7 @@ internal class Program
 		return c;
 	}
 
-	private static void ReadFileToStringArr(string filepath, char seperator, out string[]? arr)
+	private static void ReadFileToStringArr(string filepath, char seperator, ref string[]? arr)
 	{
 		string fileStr = File.ReadAllText(filepath);
 		arr = fileStr.Split(seperator);
